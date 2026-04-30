@@ -35,9 +35,6 @@ $board = array_map(function($row) {
     }, $row);
 }, $data['grid']);
 
-error_log("Received board: " . print_r($board, true));
-
-
 if (!validateBoard($board)) {
     echo json_encode(['error' => 'Invalid board configuration']);
 } else {
