@@ -10,9 +10,8 @@ export default defineConfig(() => {
     base: isProd ? '/projects/sudoku-solver/' : '/',
     plugins: [react()],
     test: {
-      environment: 'jsdom',
+      environment: 'node',
       globals: true,
-      setupFiles: ['./src/setupTests.js'],
     },
   };
 });
