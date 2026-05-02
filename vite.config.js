@@ -9,8 +9,13 @@ export default defineConfig(() => {
   return {
     base: isProd ? '/projects/sudoku-solver/' : '/',
     plugins: [react()],
+    server: {
+      proxy: {
+        '/sudoku': 'http://localhost:8000',
+      },
+    },
     test: {
-      environment: 'node',
+      environment: 'jsdom',
       globals: true,
     },
   };

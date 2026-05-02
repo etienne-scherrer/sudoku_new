@@ -21,11 +21,7 @@ In a separate terminal, start Vite:
 npm run dev
 ```
 
-Open `http://localhost:5173`. Set your API base URL in `.env.local`:
-
-```
-VITE_API_BASE_URL=http://localhost:8000/
-```
+Open `http://localhost:5173`. The dev server proxies `/sudoku/*` requests to the PHP server on port 8000 automatically.
 
 ## Build and deploy
 

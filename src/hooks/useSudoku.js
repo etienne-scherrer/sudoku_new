@@ -67,7 +67,7 @@ export default function useSudoku() {
     setLoading(true);
     setVictoryDismissed(false);
     try {
-      const response = await fetch(`/${import.meta.env.VITE_API_BASE_URL ?? ''}sudoku/generate.php`);
+      const response = await fetch(`${import.meta.env.BASE_URL}sudoku/generate.php`);
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
       setGrid(data.map(row =>
@@ -89,7 +89,7 @@ export default function useSudoku() {
     setVictoryDismissed(false);
     try {
       const response = await fetch(
-        `/${import.meta.env.VITE_API_BASE_URL ?? ''}sudoku/solve.php`,
+        `${import.meta.env.BASE_URL}sudoku/solve.php`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
