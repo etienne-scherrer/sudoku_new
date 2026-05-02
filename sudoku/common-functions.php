@@ -5,7 +5,7 @@
 function isSafe(array $board, int $row, int $col, int $num): bool {
     // Check the row and column
     for ($i = 0; $i < 9; $i++) {
-        if ($board[$row][$i]['value'] == $num || $board[$i][$col]['value'] == $num) {
+        if ($board[$row][$i]['value'] === $num || $board[$i][$col]['value'] === $num) {
             return false;
         }
     }
@@ -15,7 +15,7 @@ function isSafe(array $board, int $row, int $col, int $num): bool {
     $startCol = $col - $col % 3;
     for ($i = 0; $i < 3; $i++) {
         for ($j = 0; $j < 3; $j++) {
-            if ($board[$i + $startRow][$j + $startCol]['value'] == $num) {
+            if ($board[$i + $startRow][$j + $startCol]['value'] === $num) {
                 return false;
             }
         }

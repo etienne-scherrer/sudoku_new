@@ -14,7 +14,6 @@ function validateBoard(array $board): bool {
             if ($num !== 0) {
                 $board[$row][$col]['value'] = 0;
                 if (!isSafe($board, $row, $col, $num)) {
-                    error_log("Board invalid at row $row col $col with number $num");
                     $board[$row][$col]['value'] = $num;
                     return false;
                 }
@@ -28,9 +27,14 @@ function validateBoard(array $board): bool {
 $rawData = file_get_contents("php://input");
 $data = json_decode($rawData, true);
 
+if (!isset($data['grid']) || !is_array($data['grid']) || count($data['grid']) !== 9) {
+    echo json_encode(['error' => 'Invalid request']);
+    exit;
+}
+
 $board = array_map(function($row) {
     return array_map(function($cell) {
-        $cell['value'] = (int)$cell['value'];  // Convert to integer if coming in as string
+        $cell['value'] = (int)($cell['value'] ?? 0);
         return $cell;
     }, $row);
 }, $data['grid']);

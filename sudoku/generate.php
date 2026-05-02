@@ -46,11 +46,11 @@ function removeNumbers(array &$grid, int $attempts = 60): void {
     while ($attempts > 0) {
         $row = rand(0, 8);
         $col = rand(0, 8);
-        if ($grid[$row][$col]['value'] != 0) {
+        if ($grid[$row][$col]['value'] !== 0) {
             $backup = $grid[$row][$col]['value'];
             $grid[$row][$col]['value'] = 0;
             $copyGrid = $grid;
-            if (!solveSudoku($copyGrid)) { // Ensure the puzzle remains solvable
+            if (!solveSudoku($copyGrid)) {
                 $grid[$row][$col]['value'] = $backup;
             }
             $attempts--;
