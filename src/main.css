@@ -1,66 +1,153 @@
-h1 {
-    text-align: center;
+/* ── Base ── */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #f8fafc;
+  margin: 0;
 }
 
+.App {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+
+/* ── Grid ── */
 .sudoku-table {
-    border-collapse: collapse;
-    width: 450px;
-    height: 450px;
-    margin: 0 auto;
-    border: 3px solid black;
+  border-collapse: collapse;
+  width: 450px;
+  height: 450px;
+  border: 3px solid #1e293b;
+  border-radius: 8px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.10);
+  overflow: hidden;
+  transition: border-color 400ms, box-shadow 400ms;
+}
+
+.sudoku-table.complete {
+  border-color: #16a34a;
+  box-shadow: 0 4px 24px rgba(22, 163, 74, 0.25);
 }
 
 .sudoku-cell {
-    border: 1px solid #ccc;
-    width: 50px;
-    height: 50px;
+  border: 1px solid #e5e7eb;
+  width: 50px;
+  height: 50px;
 }
 
 .sudoku-row:nth-child(3n) .sudoku-cell {
-    border-bottom: 3px solid black;
+  border-bottom: 3px solid #94a3b8;
+}
+
+.sudoku-row:last-child .sudoku-cell {
+  border-bottom: none;
 }
 
 .sudoku-cell:nth-child(3n) {
-    border-right: 3px solid black;
+  border-right: 3px solid #94a3b8;
 }
 
+.sudoku-cell:last-child {
+  border-right: none;
+}
+
+/* ── Inputs ── */
 .sudoku-input {
-    width: 100%;
-    height: 100%;
-    border: none;
-    font-size: 20px;
-    text-align: center;
+  width: 100%;
+  height: 100%;
+  border: none;
+  font-size: 20px;
+  font-family: inherit;
+  font-weight: 400;
+  text-align: center;
+  background: white;
+  color: #2563eb;
+  padding: 0;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: background 120ms;
 }
 
-input.sudoku-input {
-    padding: 0;
-    box-sizing: border-box;
+.sudoku-input:focus {
+  outline: none;
+  background: #dbeafe;
 }
 
 .sudoku-input[readOnly] {
-    background-color: #e3e3e3;
-    color: #666;
-    pointer-events: none;
+  background: #f1f5f9;
+  color: #1e293b;
+  font-weight: 700;
+  cursor: default;
+  pointer-events: none;
 }
 
+.sudoku-input.conflict {
+  background: #fee2e2;
+  color: #dc2626;
+}
 
+/* ── Buttons ── */
 .button-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
 }
 
-.clear-button,
-.solve-button {
-    padding: 10px 20px;
-    margin: 0 10px;
-    cursor: pointer;
-    background-color: #f8f8f8;
-    font-size: 16px;
-    border: 1px solid #ccc;
+.btn {
+  padding: 10px 24px;
+  font-size: 15px;
+  font-family: inherit;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 150ms, border-color 150ms, color 150ms;
+  line-height: 1;
 }
 
-.clear-button:hover,
-.solve-button:hover {
-    background-color: #e8e8e8;
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-clear {
+  background: white;
+  color: #ef4444;
+  border: 1.5px solid #ef4444;
+}
+
+.btn-clear:not(:disabled):hover {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-generate {
+  background: white;
+  color: #475569;
+  border: 1.5px solid #94a3b8;
+}
+
+.btn-generate:not(:disabled):hover {
+  background: #f1f5f9;
+}
+
+.btn-solve {
+  background: #2563eb;
+  color: white;
+  border: 1.5px solid #2563eb;
+}
+
+.btn-solve:not(:disabled):hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
 }
