@@ -23,5 +23,11 @@ yarn-debug.log*
 yarn-error.log*
 
 .superpowers
+.idea
 /docs
+/dist
 .worktrees
+
+# PHP / Composer
+api/vendor/
+api/.phpunit.result.cache
