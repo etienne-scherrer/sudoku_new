@@ -43,6 +43,8 @@ export default function useSudoku() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [victoryDismissed, setVictoryDismissed] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [importError, setImportError] = useState('');
 
   const conflicts = computeConflicts(grid);
   const allFilled = grid.every(row => row.every(cell => cell.value !== ''));
@@ -67,7 +69,7 @@ export default function useSudoku() {
     setLoading(true);
     setVictoryDismissed(false);
     try {
-      const response = await fetch(`${import.meta.env.BASE_URL}sudoku/generate.php`);
+      const response = await fetch('/api/puzzle');
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
       setGrid(data.map(row =>
@@ -88,14 +90,11 @@ export default function useSudoku() {
     setLoading(true);
     setVictoryDismissed(false);
     try {
-      const response = await fetch(
-        `${import.meta.env.BASE_URL}sudoku/solve.php`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ grid }),
-        }
-      );
+      const response = await fetch('/api/puzzle/solve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ grid }),
+      });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
       if (data.error) {
@@ -108,6 +107,39 @@ export default function useSudoku() {
       setError('Failed to solve the grid. Please try again.');
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function importGrid(file) {
+    setImporting(true);
+    setImportError('');
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      const response = await fetch('/api/puzzle/import', {
+        method: 'POST',
+        body: formData,
+      });
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const data = await response.json();
+      if (data.error) {
+        setImportError(data.error);
+        return false;
+      }
+      setGrid(data.grid.map(row =>
+        row.map(cell => ({
+          value: cell.value ? cell.value.toString() : '',
+          readOnly: false,
+        }))
+      ));
+      setVictoryDismissed(false);
+      setImportError('');
+      return true;
+    } catch {
+      setImportError('Failed to import image. Please try again.');
+      return false;
+    } finally {
+      setImporting(false);
     }
   }
 
@@ -210,8 +242,11 @@ export default function useSudoku() {
     isModalOpen,
     loading,
     error,
+    importing,
+    importError,
     fetchGrid,
     solveSudoku,
+    importGrid,
     clearGrid,
     handleInputChange,
     handleKeyDown,
