@@ -1,37 +1,56 @@
-# Sudoku Solver
+# Sudoku
 
-A browser-based Sudoku game built with React 19 and Vite. Generate puzzles, fill them in, and solve them — or let the solver do it. Puzzles are generated and solved server-side using a PHP 8.5 backtracking algorithm.
+A browser-based Sudoku app. Generate puzzles, solve them, or import a photo via OCR.
 
-## Prerequisites
+Live at **[sudoku.etienne-scherrer.ch](https://sudoku.etienne-scherrer.ch)**
 
-- Node.js 22.12.0+ (see `.node-version`)
-- PHP 8.5 (for the backend API)
+## Stack
+
+- **Frontend:** React 19 + Vite, served by nginx
+- **Backend:** PHP 8.5-fpm, OOP with Composer (PSR-4), MRV backtracking solver
+- **OCR:** tesseract-ocr for image-to-grid import
+- **Infrastructure:** Docker Compose + Traefik (Let's Encrypt TLS)
+- **CI/CD:** GitHub Actions — tests on push, SSH deploy on pass
+
+## Project structure
+
+```
+api/
+├── public/index.php          ← front controller
+├── src/
+│   ├── Controllers/
+│   ├── Http/                 ← Request, Response, Router
+│   └── Sudoku/               ← Board, Solver, Generator, Importer
+└── tests/
+src/                          ← React app
+.docker/
+├── nginx/                    ← multi-stage Dockerfile + nginx config
+└── php/                      ← php:8.5-fpm-alpine + gd + tesseract
+compose.yml
+.github/workflows/
+├── tests.yml                 ← JS + PHP tests
+└── deploy.yml                ← SSH deploy to VPS
+```
 
 ## Run locally
 
-Start the PHP development server:
-
 ```bash
-php -S localhost:8000 -t .
-```
+# Terminal 1 — PHP API
+php -S localhost:8000 api/public/index.php
 
-In a separate terminal, start Vite:
-
-```bash
+# Terminal 2 — React dev server (proxies /api/* to port 8000)
 npm run dev
 ```
 
-Open `http://localhost:5173`. The dev server proxies `/sudoku/*` requests to the PHP server on port 8000 automatically.
+Open `http://localhost:5173`.
 
-## Build and deploy
-
-```bash
-BUILD_ENV=production npm run build
-```
-
-Copy the `dist/` folder and the `sudoku/` folder to the VPS:
+## Tests
 
 ```bash
-scp -r dist/* etienne@128.140.44.112:/var/www/dev.etienne-scherrer.ch/html/projects/sudoku-solver/
-scp -r sudoku/ etienne@128.140.44.112:/var/www/dev.etienne-scherrer.ch/html/projects/sudoku-solver/sudoku/
+npm test -- --run          # JS
+cd api && ./vendor/bin/phpunit   # PHP
 ```
+
+## Deploy
+
+Push to `main`. GitHub Actions runs tests then deploys via SSH.
