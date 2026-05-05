@@ -141,6 +141,16 @@ h1 {
   background: #f1f5f9;
 }
 
+.btn-import {
+  background: white;
+  color: #475569;
+  border: 1.5px solid #94a3b8;
+}
+
+.btn-import:not(:disabled):hover {
+  background: #f1f5f9;
+}
+
 .btn-solve {
   background: #2563eb;
   color: white;
