@@ -1,0 +1,48 @@
+name: deploy
+
+on:
+  workflow_run:
+    workflows: [tests]
+    branches: [main]
+    types: [completed]
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: Production
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+
+    steps:
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to VPS
+        env:
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          ssh -i ~/.ssh/deploy_key ${SERVER_USER}@${SERVER_HOST} "
+            set -e
+            cd ${DEPLOY_PATH}
+            OLD_HEAD=\$(git rev-parse HEAD)
+            git fetch origin main && git reset --hard origin/main
+            if ! git diff --quiet \$OLD_HEAD HEAD -- .docker/; then
+              echo 'Dockerfile changed — rebuilding images...'
+              docker compose build --no-cache
+            fi
+            docker compose up -d --remove-orphans
+          "
+
+      - name: Health check
+        run: |
+          sleep 10
+          curl -f https://sudoku.etienne-scherrer.ch/api/health

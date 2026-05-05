@@ -1,0 +1,40 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - name: Run JS tests
+        run: npm test -- --run
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          extensions: gd
+          coverage: none
+
+      - name: Install PHP dependencies
+        run: cd api && composer install --dev --no-interaction
+
+      - name: Run PHP tests
+        run: cd api && ./vendor/bin/phpunit
