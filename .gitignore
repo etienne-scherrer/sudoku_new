@@ -30,4 +30,4 @@ yarn-error.log*
 
 # PHP / Composer
 api/vendor/
-api/.phpunit.result.cache
+api/.phpunit.result.cache.idea/
