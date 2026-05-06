@@ -35,14 +35,30 @@ compose.yml
 ## Run locally
 
 ```bash
-# Terminal 1 — PHP API
-php -S localhost:8000 api/public/index.php
-
-# Terminal 2 — React dev server (proxies /api/* to port 8000)
-npm run dev
+make dev   # PHP API on :8080, Vite on :5173 — Ctrl+C stops both
 ```
 
-Open `http://localhost:5173`.
+Or with Docker (requires `compose.override.yml` — see below):
+
+```bash
+make build   # http://localhost:8080
+```
+
+### compose.override.yml
+
+Create this file locally (it's gitignored, never deployed):
+
+```yaml
+services:
+  frontend:
+    ports:
+      - "127.0.0.1:8080:80"
+
+networks:
+  traefik:
+    external: false
+    name: sudoku-traefik-local
+```
 
 ## Tests
 
