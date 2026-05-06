@@ -15,7 +15,7 @@ help:
 	@echo "  make rebuild             - Rebuild images from scratch"
 	@echo "  make logs                - Tail container logs"
 	@echo "  make bash                - Shell into the backend container"
-	@echo "  make health              - Health check (requires running stack)"
+	@echo "  make health              - Health check at localhost:8080 (requires running stack)"
 	@echo ""
 	@echo "Testing:"
 	@echo "  make test                - Run JS and PHP test suites"
@@ -27,7 +27,7 @@ help:
 
 dev:
 	@trap 'kill 0' INT; \
-	php -S localhost:8000 api/public/index.php & \
+	php -S localhost:8080 api/public/index.php & \
 	npm run dev
 
 # ── Docker ─────────────────────────────────────────────────────────────────────
@@ -56,7 +56,7 @@ bash:
 	$(DC) exec backend sh
 
 health:
-	curl -sf http://localhost/api/health | python3 -m json.tool
+	curl -sf http://localhost:8080/api/health | python3 -m json.tool
 
 # ── Testing ────────────────────────────────────────────────────────────────────
 
