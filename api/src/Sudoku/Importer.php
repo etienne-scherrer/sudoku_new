@@ -2,20 +2,23 @@
 
 namespace App\Sudoku;
 
+use GdImage;
+use RuntimeException;
+
 class Importer
 {
     public function import(string $imagePath): Board
     {
         $info = @getimagesize($imagePath);
-        if (!$info) throw new \RuntimeException('Failed to read image');
+        if (!$info) throw new RuntimeException('Failed to read image');
 
         $img = match ($info['mime']) {
             'image/jpeg' => imagecreatefromjpeg($imagePath),
             'image/png'  => imagecreatefrompng($imagePath),
             'image/webp' => imagecreatefromwebp($imagePath),
-            default      => throw new \RuntimeException('Unsupported image format'),
+            default      => throw new RuntimeException('Unsupported image format'),
         };
-        if (!$img) throw new \RuntimeException('Failed to decode image');
+        if (!$img) throw new RuntimeException('Failed to decode image');
 
         imagefilter($img, IMG_FILTER_GRAYSCALE);
 
@@ -33,28 +36,12 @@ class Importer
                 }
             }
         }
-        imagedestroy($img);
 
-        $rowDark = [];
-        $colDark = [];
-        for ($y = 0; $y < $h; $y++) {
-            $count = 0;
-            for ($x = 0; $x < $w; $x++) {
-                if ((imagecolorat($binary, $x, $y) & 0xFF) === 0) $count++;
-            }
-            if ($count / $w > 0.30) $rowDark[] = $y;
-        }
-        for ($x = 0; $x < $w; $x++) {
-            $count = 0;
-            for ($y = 0; $y < $h; $y++) {
-                if ((imagecolorat($binary, $x, $y) & 0xFF) === 0) $count++;
-            }
-            if ($count / $h > 0.30) $colDark[] = $x;
-        }
+        $rowDark = $this->darkIndices($binary, $h, $w, true);
+        $colDark = $this->darkIndices($binary, $w, $h, false);
 
         if (count($rowDark) < 8 || count($colDark) < 8) {
-            imagedestroy($binary);
-            throw new \RuntimeException('No sudoku grid detected in this image. Try a clearer photo or screenshot.');
+            throw new RuntimeException('No sudoku grid detected in this image. Try a clearer photo or screenshot.');
         }
 
         $top    = min($rowDark);
@@ -67,7 +54,6 @@ class Importer
         $square = imagecreatetruecolor(450, 450);
         imagefill($square, 0, 0, imagecolorallocate($square, 255, 255, 255));
         imagecopyresampled($square, $binary, 0, 0, $left, $top, 450, 450, $gridW, $gridH);
-        imagedestroy($binary);
 
         $cellSize = 50;
         $tempDir  = sys_get_temp_dir();
@@ -81,7 +67,6 @@ class Importer
 
                 $tmp = $tempDir . '/sudoku_' . $r . '_' . $c . '_' . uniqid() . '.png';
                 imagepng($cell, $tmp);
-                imagedestroy($cell);
 
                 $out   = shell_exec('tesseract ' . escapeshellarg($tmp) . ' stdout --psm 10 -c tessedit_char_whitelist=123456789 2>/dev/null');
                 $digit = (int)trim($out ?? '');
@@ -92,8 +77,21 @@ class Importer
                 }
             }
         }
-        imagedestroy($square);
 
         return $board;
+    }
+
+    private function darkIndices(GdImage $img, int $outerMax, int $innerMax, bool $rowMode): array
+    {
+        $indices = [];
+        for ($i = 0; $i < $outerMax; $i++) {
+            $count = 0;
+            for ($j = 0; $j < $innerMax; $j++) {
+                $pixel = $rowMode ? imagecolorat($img, $j, $i) : imagecolorat($img, $i, $j);
+                if (($pixel & 0xFF) === 0) $count++;
+            }
+            if ($count / $innerMax > 0.30) $indices[] = $i;
+        }
+        return $indices;
     }
 }

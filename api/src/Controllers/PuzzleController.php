@@ -8,6 +8,7 @@ use App\Sudoku\Board;
 use App\Sudoku\Generator;
 use App\Sudoku\Importer;
 use App\Sudoku\Solver;
+use RuntimeException;
 
 class PuzzleController
 {
@@ -61,7 +62,7 @@ class PuzzleController
             $importer = new Importer();
             $board    = $importer->import($file['tmp_name']);
             return Response::json(['grid' => $board->toArray()]);
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             return Response::error($e->getMessage(), 422);
         }
     }
