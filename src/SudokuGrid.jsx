@@ -55,6 +55,11 @@ function SudokuGrid() {
     [grid, selectedCell]
   );
 
+  const handleCellKeyDown = (e, row, col) => {
+    if (e.key === 'Escape') { setSelectedCell(null); e.target.blur(); return; }
+    handleKeyDown(e, row, col);
+  };
+
   const handleImport = (file) => setPendingImportFile(file);
 
   const handleImportConfirm = async () => {
@@ -85,17 +90,19 @@ function SudokuGrid() {
       <Modal isOpen={isModalOpen} onClose={dismissModal}>
         {modalContent()}
       </Modal>
-      <SudokuBoard
-        grid={grid}
-        conflicts={conflicts}
-        peers={peers}
-        sameValue={sameValue}
-        selectedCell={selectedCell}
-        isComplete={isComplete}
-        onInputChange={handleInputChange}
-        onKeyDown={handleKeyDown}
-        onCellFocus={setSelectedCell}
-      />
+      <div onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget)) setSelectedCell(null); }}>
+        <SudokuBoard
+          grid={grid}
+          conflicts={conflicts}
+          peers={peers}
+          sameValue={sameValue}
+          selectedCell={selectedCell}
+          isComplete={isComplete}
+          onInputChange={handleInputChange}
+          onKeyDown={handleCellKeyDown}
+          onCellFocus={setSelectedCell}
+        />
+      </div>
       <Controls
         onClear={clearGrid}
         onGenerate={fetchGrid}
