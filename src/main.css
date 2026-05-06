@@ -83,17 +83,30 @@ h1 {
   background: #dbeafe;
 }
 
+.sudoku-input.selected,
+.sudoku-input.selected:focus {
+  background: #2563eb;
+  color: white;
+}
+
 .sudoku-input[readOnly] {
   background: #f1f5f9;
   color: #1e293b;
   font-weight: 700;
   cursor: default;
-  pointer-events: none;
 }
 
 .sudoku-input.conflict {
   background: #fee2e2;
   color: #dc2626;
+}
+
+.sudoku-input.peer {
+  background: #eff6ff;
+}
+
+.sudoku-input.same-value {
+  background: #bfdbfe;
 }
 
 /* ── Buttons ── */

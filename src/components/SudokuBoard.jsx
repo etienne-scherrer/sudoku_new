@@ -1,7 +1,7 @@
 import React from 'react';
 import SudokuCell from './SudokuCell';
 
-function SudokuBoard({ grid, conflicts, isComplete, onInputChange, onKeyDown }) {
+function SudokuBoard({ grid, conflicts, peers, sameValue, selectedCell, isComplete, onInputChange, onKeyDown, onCellFocus }) {
   return (
     <table id="sudoku-grid" className={`sudoku-table${isComplete ? ' complete' : ''}`}>
       <tbody>
@@ -13,8 +13,12 @@ function SudokuBoard({ grid, conflicts, isComplete, onInputChange, onKeyDown }) 
                 value={cell.value}
                 readOnly={cell.readOnly}
                 isConflict={conflicts.has(`${rowIndex}-${colIndex}`)}
+                isPeer={peers.has(`${rowIndex}-${colIndex}`)}
+                isSameValue={sameValue.has(`${rowIndex}-${colIndex}`)}
+                isSelected={selectedCell?.row === rowIndex && selectedCell?.col === colIndex}
                 onChange={onInputChange}
                 onKeyDown={onKeyDown}
+                onFocus={onCellFocus}
                 row={rowIndex}
                 col={colIndex}
               />
