@@ -7,6 +7,10 @@ import pytesseract
 from .board import Board
 
 
+class SudokuImportError(RuntimeError):
+    """Raised for expected, user-facing import failures (bad image, no grid found)."""
+
+
 def _order_points(pts: np.ndarray) -> np.ndarray:
     """Order 4 corner points as: top-left, top-right, bottom-right, bottom-left."""
     rect = np.zeros((4, 2), dtype=np.float32)
@@ -25,7 +29,7 @@ class Importer:
         buf = np.frombuffer(image_bytes, np.uint8)
         gray = cv2.imdecode(buf, cv2.IMREAD_GRAYSCALE)
         if gray is None:
-            raise RuntimeError("Failed to decode image")
+            raise SudokuImportError("Failed to decode image")
 
         # 2. Threshold
         binary = cv2.adaptiveThreshold(
@@ -45,7 +49,7 @@ class Importer:
                 grid_contour = approx
                 break
         else:
-            raise RuntimeError(
+            raise SudokuImportError(
                 "No sudoku grid detected in this image. Try a clearer photo or screenshot."
             )
 

@@ -5,7 +5,7 @@ import os
 from .sudoku.board import Board
 from .sudoku.solver import Solver
 from .sudoku.generator import Generator
-from .sudoku.importer import Importer
+from .sudoku.importer import Importer, SudokuImportError
 
 app = FastAPI()
 
@@ -49,6 +49,6 @@ async def import_puzzle(image: UploadFile = File(...)):
     data = await image.read()
     try:
         board = Importer().import_image(data)
-    except RuntimeError as e:
+    except SudokuImportError as e:
         return {"error": str(e)}
     return {"grid": board.to_array()}
