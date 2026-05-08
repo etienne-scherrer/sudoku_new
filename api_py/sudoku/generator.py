@@ -35,7 +35,7 @@ class Generator:
                 backup = board.get_value(row, col)
                 board.set_value(row, col, 0)
                 copy = Board.from_array(board.to_array())
-                if not self._solver.solve(copy):
+                if self._solver.count_solutions(copy) != 1:
                     board.set_value(row, col, backup)
                 attempts -= 1
 

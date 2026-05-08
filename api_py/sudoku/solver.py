@@ -36,6 +36,62 @@ class Solver:
                     return False
         return True
 
+    def count_solutions(self, board: Board, limit: int = 2) -> int:
+        """Count solutions up to `limit`. Returns as soon as limit is reached."""
+        if not self.validate(board):
+            return 0
+        rows = [0] * 9
+        cols = [0] * 9
+        boxes = [0] * 9
+        for r in range(9):
+            for c in range(9):
+                v = board.get_value(r, c)
+                if v != 0:
+                    bit = 1 << v
+                    rows[r] |= bit
+                    cols[c] |= bit
+                    boxes[(r // 3) * 3 + (c // 3)] |= bit
+        return self._count_backtrack(board, rows, cols, boxes, limit)
+
+    def _count_backtrack(self, board: Board, rows: list[int], cols: list[int], boxes: list[int], limit: int) -> int:
+        min_count = 10
+        best_row = -1
+        best_col = -1
+        for r in range(9):
+            for c in range(9):
+                if board.get_value(r, c) != 0:
+                    continue
+                used = rows[r] | cols[c] | boxes[(r // 3) * 3 + (c // 3)]
+                count = sum(1 for n in range(1, 10) if not (used & (1 << n)))
+                if count == 0:
+                    return 0
+                if count < min_count:
+                    min_count = count
+                    best_row, best_col = r, c
+
+        if best_row == -1:
+            return 1
+
+        box = (best_row // 3) * 3 + (best_col // 3)
+        used = rows[best_row] | cols[best_col] | boxes[box]
+        total = 0
+        for n in range(1, 10):
+            if used & (1 << n):
+                continue
+            bit = 1 << n
+            board.set_value(best_row, best_col, n)
+            rows[best_row] |= bit
+            cols[best_col] |= bit
+            boxes[box] |= bit
+            total += self._count_backtrack(board, rows, cols, boxes, limit - total)
+            board.set_value(best_row, best_col, 0)
+            rows[best_row] &= ~bit
+            cols[best_col] &= ~bit
+            boxes[box] &= ~bit
+            if total >= limit:
+                break
+        return total
+
     def _backtrack(self, board: Board, rows: list[int], cols: list[int], boxes: list[int]) -> bool:
         min_count = 10
         best_row = -1
