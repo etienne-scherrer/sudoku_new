@@ -69,7 +69,9 @@ export default function useSudoku() {
     setLoading(true);
     setVictoryDismissed(false);
     try {
-      const response = await fetch('/api/puzzle');
+      const response = await fetch('/api/puzzle', {
+        headers: { 'X-API-Key': import.meta.env.VITE_API_KEY || '' },
+      });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const data = await response.json();
       setGrid(data.map(row =>
@@ -92,7 +94,10 @@ export default function useSudoku() {
     try {
       const response = await fetch('/api/puzzle/solve', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': import.meta.env.VITE_API_KEY || '',
+        },
         body: JSON.stringify({ grid }),
       });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -118,6 +123,7 @@ export default function useSudoku() {
       formData.append('image', file);
       const response = await fetch('/api/puzzle/import', {
         method: 'POST',
+        headers: { 'X-API-Key': import.meta.env.VITE_API_KEY || '' },
         body: formData,
       });
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
