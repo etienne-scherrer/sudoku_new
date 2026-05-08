@@ -22,11 +22,13 @@ services:
   backend:
     build:
       context: .
-      dockerfile: .docker/php/Dockerfile
+      dockerfile: .docker/python/Dockerfile
     container_name: sudoku_backend
     restart: unless-stopped
     networks:
       - sudoku-network
+    environment:
+      API_KEY: ${API_KEY:-}
 
 networks:
   sudoku-network:
