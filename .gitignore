@@ -29,6 +29,12 @@ yarn-error.log*
 .worktrees
 .playwright-mcp
 
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
 # PHP / Composer
 api/vendor/
 api/.phpunit.result.cache
