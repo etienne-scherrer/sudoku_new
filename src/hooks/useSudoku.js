@@ -77,7 +77,7 @@ export default function useSudoku() {
       setGrid(data.map(row =>
         row.map(cell => ({
           value: cell.value ? cell.value.toString() : '',
-          readOnly: cell.value !== 0,
+          readOnly: cell.readOnly,
         }))
       ));
       setError('');

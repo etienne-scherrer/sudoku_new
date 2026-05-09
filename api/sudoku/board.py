@@ -15,7 +15,7 @@ class Board:
         cells = [
             [
                 {
-                    "value": int(cell.get("value", 0)),
+                    "value": int(v) if (v := cell.get("value", 0)) not in ("", None) else 0,
                     "readOnly": bool(cell.get("readOnly", False)),
                 }
                 for cell in row
